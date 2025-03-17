@@ -56,3 +56,34 @@ def analyze_text(filename):
 
 # Run the analysis
 analyze_text('sample.txt')
+
+
+# Exercises
+import random
+
+def count_unique_words(text):
+    """Count the number of unique words in the text."""
+    words = extract_words(text)
+    return len(set(words))
+
+def find_longest_word(text):
+    """Find the longest word in the text."""
+    words = extract_words(text)
+    return max(words, key=len) if words else None
+
+def count_word_occurrences(text, target_word):
+    """Count occurrences of a specific word (case-insensitive)."""
+    words = extract_words(text)
+    return words.count(target_word.lower())
+
+def percentage_longer_than_avg(text):
+    """Calculate the percentage of words that are longer than the average word length."""
+    words = extract_words(text)
+    if not words:
+        return 0.0
+
+    avg_length = sum(len(word) for word in words) / len(words)
+    longer_words = [word for word in words if len(word) > avg_length]
+
+    return (len(longer_words) / len(words)) * 100
+
