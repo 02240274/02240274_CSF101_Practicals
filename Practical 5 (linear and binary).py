@@ -1,70 +1,69 @@
+import math
+import time
+
 def linear_search_all(arr, target):
     indices = []
-    for i in range(len(arr)):
-        if arr[i] == target:
+    comparisons = 0
+    for i, val in enumerate(arr):
+        comparisons += 1
+        if val == target:
             indices.append(i)
-    return indices
+    return indices, comparisons
 
 def binary_search_insertion_point(arr, target):
-    low = 0
-    high = len(arr)
+    low, high = 0, len(arr)
+    comparisons = 0
     while low < high:
         mid = (low + high) // 2
+        comparisons += 1
         if arr[mid] < target:
             low = mid + 1
         else:
             high = mid
-    return low
+    return low, comparisons
 
-def linear_search_with_comparisons(arr, target):
+def jump_search(arr, target):
+    length = len(arr)
+    block_size = int(math.sqrt(length))
     comparisons = 0
-    for i in range(len(arr)):
+
+    # Finding the block
+    start = 0
+    end = block_size
+    while start < length and arr[min(end, length)-1] < target:
+        comparisons += 1
+        start = end
+        end += block_size
+        if start >= length:
+            return -1, comparisons
+
+    # Linear search within the block
+    for i in range(start, min(end, length)):
         comparisons += 1
         if arr[i] == target:
             return i, comparisons
     return -1, comparisons
 
-def binary_search_with_comparisons(arr, target):
-    comparisons = 0
-    low = 0
-    high = len(arr) - 1
-    while low <= high:
-        comparisons += 1
-        mid = (low + high) // 2
-        if arr[mid] == target:
-            return mid, comparisons
-        elif arr[mid] < target:
-            low = mid + 1
-        else:
-            high = mid - 1
-    return -1, comparisons
+# Function to test and compare performance
+def compare_search_algorithms(arr, target):
+    print("=== Search Performance Comparison ===")
+    
+    start = time.time()
+    result, comp_linear = linear_search_all(arr, target)
+    end = time.time()
+    print(f"Linear Search: Indices={result}, Comparisons={comp_linear}, Time={end - start:.6f}s")
 
-import math
+    start = time.time()
+    index, comp_binary = binary_search_insertion_point(arr, target)
+    end = time.time()
+    print(f"Binary Insertion Point: Index={index}, Comparisons={comp_binary}, Time={end - start:.6f}s")
 
-def jump_search_with_comparisons(arr, target):
-    n = len(arr)
-    step = int(math.sqrt(n))
-    prev = 0
-    comparisons = 0
+    start = time.time()
+    index, comp_jump = jump_search(arr, target)
+    end = time.time()
+    print(f"Jump Search: Index={index}, Comparisons={comp_jump}, Time={end - start:.6f}s")
 
-    # Finding the block
-    while prev < n and arr[min(step, n) - 1] < target:
-        comparisons += 1
-        prev = step
-        step += int(math.sqrt(n))
-        if prev >= n:
-            return -1, comparisons
-
-    # Linear search in the block
-    while prev < min(step, n):
-        comparisons += 1
-        if arr[prev] == target:
-            return prev, comparisons
-        prev += 1
-
-    return -1, comparisons
-
-def compare_searches(arr, target):
-    print("Linear Search:", linear_search_with_comparisons(arr, target))
-    print("Binary Search:", binary_search_with_comparisons(arr, target))
-    print("Jump Search:", jump_search_with_comparisons(arr, target))
+# Example usage
+arr = sorted([1, 2, 4, 4, 4, 5, 6, 7, 8])
+target = 4
+compare_search_algorithms(arr, target)
